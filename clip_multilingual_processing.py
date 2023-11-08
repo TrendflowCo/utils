@@ -5,7 +5,8 @@ from .image_processing import get_img
 
 # We use the original clip-ViT-B-32 for encoding images
 img_model = SentenceTransformer('clip-ViT-B-32')
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+img_model.to(device)
 # Our text embedding model is aligned to the img_model and maps 50+
 # languages to the same vector space
 text_model = SentenceTransformer('sentence-transformers/clip-ViT-B-32-multilingual-v1')

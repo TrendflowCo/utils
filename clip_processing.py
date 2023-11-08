@@ -6,7 +6,8 @@ import numpy as np
 from .image_processing import get_img
 
 model, preprocess = clip.load("ViT-L/14@336px")
-# model.cuda().eval()
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model.to(device)
 input_resolution = model.visual.input_resolution
 context_length = model.context_length
 vocab_size = model.vocab_size

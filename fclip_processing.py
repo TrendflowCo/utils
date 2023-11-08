@@ -4,6 +4,8 @@ from .image_processing import get_img
 
 model_name = "patrickjohncyh/fashion-clip"
 model = CLIPModel.from_pretrained(model_name)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model.to(device)
 processor = CLIPProcessor.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
         
