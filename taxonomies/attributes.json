@@ -1,0 +1,176 @@
+{
+    "Color": {
+        "Red": {
+        },
+        "Blue": {
+        },
+        "Green": {
+        },
+        "Yellow": {
+        },
+        "Black": {
+        },
+        "White": {
+        },
+        "Purple": {
+        },
+        "Pink": {
+        },
+        "Orange": {
+        },
+        "Brown": {
+        },
+        "Grey": {
+        },
+        "Cyan": {
+        },
+        "Magenta": {
+        },
+        "Beige": {
+        },
+        "Maroon": {
+        },
+        "Olive": {
+        },
+        "Teal": {
+        },
+        "Navy": {
+        },
+        "Lime": {
+        },
+        "Coral": {
+        },
+        "Turquoise": {
+        },
+        "Silver": {
+        },
+        "Gold": {
+        },
+        "Bronze": {
+        },
+        "Ivory": {
+        },
+        "Aquamarine": {
+        },
+        "Amber": {
+        },
+        "Violet": {
+        },
+        "Rose": {
+        },
+        "Chartreuse": {
+        },
+        "Khaki": {
+        },
+        "Fuchsia": {
+        },
+        "Lavender": {
+        },
+        "Mint": {
+        },
+        "Peach": {
+        },
+        "Indigo": {
+        },
+        "Sapphire": {
+        },
+        "Ruby": {
+        },
+        "Emerald": {
+        }
+    },
+
+    "Material": {
+        "Cotton": {
+        },
+        "Denim": {
+        },
+        "Leather": {
+        },
+        "Synthetic": {
+        },
+        "Wool": {
+        },
+        "Silk": {
+        },
+        "Linen": {
+        },
+        "Velvet": {},
+        "Suede": {},
+        "Satin": {}
+    },
+    "Pattern": {
+        "Solid": {
+        },
+        "Striped": {
+        },
+        "Plaid": {
+        },
+        "Print": {
+        },
+        "Embellished": {},
+        "Lace": {}
+    },
+    "Dress Code": {
+        "Casual": {},
+        "Formal": {}
+    },
+     "Style": {
+            "Sporty": {},
+            "Vintage": {},
+            "Streetwear": {},
+            "Ethnic": {},
+            "Bohemian": {},
+            "Punk": {},
+            "Gothic": {},
+            "Preppy": {},
+            "Hipster": {},
+            "Minimalist": {},
+            "Military": {},
+            "Nautical": {},
+            "Casual Chic": {},
+            "Business Casual": {},
+            "Grunge": {},
+            "Rocker": {},
+            "Mod": {},
+            "Western": {},
+            "Country": {},
+            "Retro": {},
+            "Workwear": {},
+            "Normcore": {},
+            "Avant-Garde": {}
+    },
+    "Season": {
+        "Spring": {
+        },
+        "Summer": {
+        },
+        "Fall": {
+        },
+        "Winter": {
+        }
+    },
+    "Occasion": {
+        "Workwear": {
+        },
+        "Evening": {
+        },
+        "Everyday": {
+        },
+        "Beach": {
+        },
+        "Wedding": {
+        },
+        "Party": {
+        },
+        "Travel": {
+        }
+    },
+    "Fit": {
+        "Slim": {},
+        "Regular": {},
+        "Loose": {},
+        "Tailored": {},
+        "Oversized": {}
+    }
+}
