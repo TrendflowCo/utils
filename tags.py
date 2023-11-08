@@ -10,23 +10,63 @@ from .clip_processing import compute_image_embeddings as clip_image
 from .fclip_processing import compute_image_embeddings as fclip_image
 from .clip_multilingual_processing import compute_image_embeddings as mclip_image
 from .embedding_operations import find_best_matches, find_most_similar_path
-from .taxonomies import *
+from .taxonomies import (taxonomy_db_clip, attributes_fclip_text, attributes_clip_text, 
+                        attributes_fclip, taxonomy_fclip, attributes_clip, taxonomy_clip)
 
-def predict_tags(item_data, cookies_dict, text_cols, text_cols_full):
+# import pickle as pkl
+
+# # CLIP
+# with open('/vocab/taxonomy_embeddings_clip.pkl', 'rb') as f:
+#     taxonomy_clip = pkl.load(f)
+
+# with open('./vocab/attributes_embeddings_clip.pkl', 'rb') as f:
+#     attributes_clip = pkl.load(f)
+
+
+# # FCLIP
+# with open('./vocab/taxonomy_embeddings_fclip.pkl', 'rb') as f:
+#     taxonomy_fclip = pkl.load(f)
+
+# with open('./vocab/attributes_embeddings_fclip.pkl', 'rb') as f:
+#     attributes_fclip = pkl.load(f)
+
+
+# with open('./vocab/attributes_embeddings_clip_flat.pkl', 'rb') as f:
+#     attributes_clip_text = pkl.load(f)
+
+# with open('./vocab/attributes_embeddings_fclip_flat.pkl', 'rb') as f:
+#     attributes_fclip_text = pkl.load(f)
+    
+# with open('./vocab/db/taxonomy_embeddings_clip.pkl', 'rb') as f:
+#     taxonomy_db_clip = pkl.load(f)
+    
+def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
     
     img_url = item_data['Product image URL']
     shop_link = item_data['Product page URL']
     
-    
     text = build_text(item_data, text_cols)
     text_full = build_text(item_data, text_cols_full)
-    
+
+    # Image embeddings
     image_embedding_clip = clip_image(img_url, cookies_dict)
     image_embedding_fclip = fclip_image(img_url, cookies_dict)
-    
+
+    # Text embeddings
     text_embedding_fclip = fclip_text(text)
-    
     text_full_embedding_clip = clip_text(text_full)
+
+    return (image_embedding_clip,
+            image_embedding_fclip,
+            text_embedding_fclip,
+            text_full_embedding_clip)
+
+def predict_tags(embeddings):
+ 
+    (image_embedding_clip,
+    image_embedding_fclip,
+    text_embedding_fclip,
+    text_full_embedding_clip) = embeddings
     
     blend_embedding_fclip = torch.concat([image_embedding_fclip, text_embedding_fclip]).mean(0).reshape(1, -1)
     
@@ -42,6 +82,7 @@ def predict_tags(item_data, cookies_dict, text_cols, text_cols_full):
         attributes[attr] = ' '.join(best_path).strip()
 
     return categories, attributes
+    
     
 def get_image_top_tags(img_url, THRESHOLD=0.25):
     
