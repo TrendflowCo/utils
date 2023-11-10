@@ -13,6 +13,8 @@ from .embedding_operations import find_best_matches, find_most_similar_path, fin
 from .taxonomies import (taxonomy_db_clip, attributes_fclip_text, attributes_clip_text, 
                         attributes_fclip, taxonomy_fclip, attributes_clip, taxonomy_clip)
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 # import pickle as pkl
 
 # # CLIP
@@ -49,12 +51,12 @@ def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
     text_full = build_text(item_data, text_cols_full)
 
     # Image embeddings
-    image_embedding_clip = clip_image(img_url, cookies_dict)
-    image_embedding_fclip = fclip_image(img_url, cookies_dict)
+    image_embedding_clip = clip_image(img_url, cookies_dict).to(device)
+    image_embedding_fclip = fclip_image(img_url, cookies_dict).to(device)
 
     # Text embeddings
-    text_embedding_fclip = fclip_text(text)
-    text_full_embedding_clip = clip_text(text_full)
+    text_embedding_fclip = fclip_text(text).to(device)
+    text_full_embedding_clip = clip_text(text_full).to(device)
 
     return (image_embedding_clip,
             image_embedding_fclip,
@@ -74,12 +76,13 @@ def predict_tags(embeddings, threshold=0.25):
     
     categories = find_best_matches(blend_full_embedding_clip, taxonomy_db_clip)
 
-    attributes = {}
+    attributes = []
     for attr in attributes_clip:
   
         best_path = find_similar_paths(blend_embedding_fclip, attributes_fclip_text[attr], threshold)
 
-        attributes[attr] = ', '.join(best_path).strip()
+        # attributes[attr] = ', '.join(best_path).strip()
+        attributes.append({'attr': attr, 'similarities': best_path})
 
     return categories, attributes
     

@@ -3,6 +3,7 @@ from .fclip_processing import compute_text_embeddings as fclip
 from .clip_processing import compute_text_embeddings as clip
 from .clip_multilingual_processing import compute_text_embeddings as mclip
 import torch
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -124,7 +125,7 @@ def find_similar_paths(input_tensor, data_dict, threshold):
             # If we find an embedding, compute the cosine similarity
             new_path = f"{current_path} -> {key}" if current_path else key
             if 'embedding' in value:
-                similarity = get_similarity(input_tensor, value['embedding'].to(device))
+                similarity = get_similarity(input_tensor, value['embedding']).cpu()
                 similar_paths.append((new_path, similarity))
             else:
                 # Otherwise, continue searching down the dictionary
@@ -144,7 +145,7 @@ def find_similar_paths(input_tensor, data_dict, threshold):
     result_paths = []
     for (path, similarity), rank in zip(similar_paths, percentile_ranks):
         if similarity * rank / 100.0 >= threshold:
-            result_paths.append(path)
+            result_paths.append({'value': path, 'similarity': similarity})
 
     return result_paths
 
