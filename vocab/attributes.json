@@ -81,7 +81,7 @@
     },
 
     "Material": {
-        "Cotton": {
+       "Cotton": {
         },
         "Denim": {
         },
@@ -108,7 +108,8 @@
         },
         "Print": {
         },
-        "Embellished": {},
+        "Embellished": {
+        },
         "Lace": {}
     },
     "Dress Code": {

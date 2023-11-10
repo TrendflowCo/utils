@@ -1,7 +1,6 @@
 import pickle as pkl
 from pathlib import Path
 
-
 curr_path = Path(__file__).parent.resolve()
 
 # CLIP

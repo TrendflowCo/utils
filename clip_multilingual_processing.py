@@ -29,7 +29,7 @@ def compute_text_embeddings(text):
     if isinstance(text, str):
         text = [text]
     with torch.no_grad():
-        embeddings = text_model.encode(text,  convert_to_tensor=True)
+        embeddings = text_model.encode(text,  convert_to_tensor=True).to(device)
 
     return embeddings
 

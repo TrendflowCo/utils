@@ -2,6 +2,9 @@ import torch.nn.functional as F
 from .fclip_processing import compute_text_embeddings as fclip
 from .clip_processing import compute_text_embeddings as clip
 from .clip_multilingual_processing import compute_text_embeddings as mclip
+import torch
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 def get_similarity(image_features, text_features):
     image_features_normalized = F.normalize(image_features, dim=1)
@@ -46,7 +49,7 @@ def find_best_match_at_level(embeddings, image_embedding):
     best_match = None
     for key, value in embeddings.items():
         if isinstance(value, dict) and 'embedding' in value:
-            similarity = get_similarity(image_embedding, value['embedding'].reshape(1, -1))
+            similarity = get_similarity(image_embedding, value['embedding'].to(device).reshape(1, -1))
             if similarity > highest_similarity:
                 highest_similarity = similarity
                 best_match = key
@@ -78,8 +81,7 @@ def find_most_similar_path(input_tensor, data_dict):
             # If we find an embedding, compute the cosine similarity
             new_path = f"{current_path} -> {key}" if current_path else key
             if 'embedding' in value:
-                # similarity = F.cosine_similarity(input_tensor.unsqueeze(0), value['embedding'].unsqueeze(0), dim=1)
-                similarity = get_similarity(input_tensor,  value['embedding'])
+                similarity = get_similarity(input_tensor,  value['embedding'].to(device))
                 if similarity > max_similarity['score']:
                     max_similarity['score'] = similarity
                     max_similarity['path'] = new_path
@@ -92,4 +94,62 @@ def find_most_similar_path(input_tensor, data_dict):
     result = search_dict_for_similarity(data_dict, input_tensor)
     # Return the path with the highest cosine similarity score
     return result['path'].split(' -> ')
+
+# def find_similar_paths(input_tensor, data_dict, threshold):
+#     # Helper function to recursively search the dictionary and compute cosine similarity
+#     def search_dict_for_similarity(sub_dict, input_tensor, current_path="", similar_paths=[]):
+#         for key, value in sub_dict.items():
+#             # If we find an embedding, compute the cosine similarity
+#             new_path = f"{current_path} -> {key}" if current_path else key
+#             if 'embedding' in value:
+#                 similarity = get_similarity(input_tensor,  value['embedding'].to(device)).float()
+#                 if similarity >= threshold:
+#                     similar_paths.append(new_path)
+#             else:
+#                 # Otherwise, continue searching down the dictionary
+#                 search_dict_for_similarity(value, input_tensor, new_path, similar_paths)
+#         return similar_paths
+
+#     similar_paths = search_dict_for_similarity(data_dict, input_tensor)
+#     return similar_paths
+
+import numpy as np
+from scipy.stats import percentileofscore
+
+
+def find_similar_paths(input_tensor, data_dict, threshold):
+    # Helper function to recursively search the dictionary and compute cosine similarity
+    def search_dict_for_similarity(sub_dict, input_tensor, current_path="", similar_paths=[]):
+        for key, value in sub_dict.items():
+            # If we find an embedding, compute the cosine similarity
+            new_path = f"{current_path} -> {key}" if current_path else key
+            if 'embedding' in value:
+                similarity = get_similarity(input_tensor, value['embedding'].to(device))
+                similar_paths.append((new_path, similarity))
+            else:
+                # Otherwise, continue searching down the dictionary
+                search_dict_for_similarity(value, input_tensor, new_path, similar_paths)
+
+    # Collect similarity values for all leaf nodes
+    similar_paths = []
+    search_dict_for_similarity(data_dict, input_tensor, similar_paths=similar_paths)
+
+    # Extract similarity values
+    similarities = [similarity.numpy()[0][0] for _, similarity in similar_paths]
+
+    # Calculate the percentile rank for each leaf node's similarity
+    percentile_ranks = [percentileofscore(similarities, similarity, kind='weak') for (_, similarity) in similar_paths]
+
+    # Filter and return paths where the product of similarity and percentile rank is above the threshold
+    result_paths = []
+    for (path, similarity), rank in zip(similar_paths, percentile_ranks):
+        if similarity * rank / 100.0 >= threshold:
+            result_paths.append(path)
+
+    return result_paths
+
+
+
+
+
 

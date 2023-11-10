@@ -9,7 +9,7 @@ from .clip_multilingual_processing import compute_text_embeddings as mclip_text
 from .clip_processing import compute_image_embeddings as clip_image
 from .fclip_processing import compute_image_embeddings as fclip_image
 from .clip_multilingual_processing import compute_image_embeddings as mclip_image
-from .embedding_operations import find_best_matches, find_most_similar_path
+from .embedding_operations import find_best_matches, find_most_similar_path, find_similar_paths
 from .taxonomies import (taxonomy_db_clip, attributes_fclip_text, attributes_clip_text, 
                         attributes_fclip, taxonomy_fclip, attributes_clip, taxonomy_clip)
 
@@ -61,7 +61,7 @@ def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
             text_embedding_fclip,
             text_full_embedding_clip)
 
-def predict_tags(embeddings):
+def predict_tags(embeddings, threshold=0.25):
  
     (image_embedding_clip,
     image_embedding_fclip,
@@ -77,9 +77,9 @@ def predict_tags(embeddings):
     attributes = {}
     for attr in attributes_clip:
   
-        best_path = find_most_similar_path(blend_embedding_fclip, attributes_fclip_text[attr])
+        best_path = find_similar_paths(blend_embedding_fclip, attributes_fclip_text[attr], threshold)
 
-        attributes[attr] = ' '.join(best_path).strip()
+        attributes[attr] = ', '.join(best_path).strip()
 
     return categories, attributes
     
