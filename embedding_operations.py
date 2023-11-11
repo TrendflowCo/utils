@@ -125,7 +125,7 @@ def find_similar_paths(input_tensor, data_dict, threshold):
             # If we find an embedding, compute the cosine similarity
             new_path = f"{current_path} -> {key}" if current_path else key
             if 'embedding' in value:
-                similarity = get_similarity(input_tensor, value['embedding']).cpu()
+                similarity = get_similarity(input_tensor, value['embedding'].to(device)).cpu()
                 similar_paths.append((new_path, similarity))
             else:
                 # Otherwise, continue searching down the dictionary
