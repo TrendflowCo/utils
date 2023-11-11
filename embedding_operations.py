@@ -139,7 +139,7 @@ def find_similar_paths(input_tensor, data_dict, threshold):
     similarities = [similarity.numpy()[0][0] for _, similarity in similar_paths]
 
     # Calculate the percentile rank for each leaf node's similarity
-    percentile_ranks = [percentileofscore(similarities, similarity, kind='weak') for (_, similarity) in similarities]
+    percentile_ranks = [percentileofscore(similarities, similarity, kind='weak') for similarity in similarities]
 
     # Filter and return paths where the product of similarity and percentile rank is above the threshold
     result_paths = []
