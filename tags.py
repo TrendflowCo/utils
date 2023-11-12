@@ -51,12 +51,22 @@ def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
     text_full = build_text(item_data, text_cols_full)
 
     # Image embeddings
-    image_embedding_clip = clip_image(img_url, cookies_dict).to(device)
-    image_embedding_fclip = fclip_image(img_url, cookies_dict).to(device)
+    image_embedding_clip = clip_image(img_url, cookies_dict)
+    if image_embedding_clip is not none:
+        image_embedding_clip = image_embedding_clip.to(device)
+        
+    image_embedding_fclip = fclip_image(img_url, cookies_dict)
+    if image_embedding_fclip is not none:
+        image_embedding_fclip = image_embedding_fclip.to(device)
 
     # Text embeddings
     text_embedding_fclip = fclip_text(text).to(device)
+    if text_embedding_fclip is not none:
+        text_embedding_fclip = text_embedding_fclip.to(device)
+        
     text_full_embedding_clip = clip_text(text_full).to(device)
+    if text_full_embedding_clip is not none:
+        text_full_embedding_clip = text_full_embedding_clip.to(device)
 
     return (image_embedding_clip,
             image_embedding_fclip,
@@ -64,25 +74,32 @@ def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
             text_full_embedding_clip)
 
 def predict_tags(embeddings, threshold=0.25):
- 
+
     (image_embedding_clip,
     image_embedding_fclip,
     text_embedding_fclip,
     text_full_embedding_clip) = embeddings
-    
-    blend_embedding_fclip = torch.concat([image_embedding_fclip, text_embedding_fclip]).mean(0).reshape(1, -1)
-    
-    blend_full_embedding_clip = torch.concat([image_embedding_clip, text_full_embedding_clip]).mean(0).reshape(1, -1)
-    
-    categories = find_best_matches(blend_full_embedding_clip, taxonomy_db_clip)
 
-    attributes = []
-    for attr in attributes_clip:
-  
-        best_path = find_similar_paths(blend_embedding_fclip, attributes_fclip_text[attr], threshold)
+    categories, attributes = None, None
 
-        # attributes[attr] = ', '.join(best_path).strip()
-        attributes.append({'attr': attr, 'similarities': best_path})
+    if not (image_embedding_clip is None or text_full_embedding_clip is None):
+        
+        blend_full_embedding_clip = torch.concat([image_embedding_clip, text_full_embedding_clip]).mean(0).reshape(1, -1)
+        
+        categories = find_best_matches(blend_full_embedding_clip, taxonomy_db_clip)
+
+    if not (image_embedding_fclip is None or text_embedding_fclip is None):
+        
+        blend_embedding_fclip = torch.concat([image_embedding_fclip, text_embedding_fclip]).mean(0).reshape(1, -1)
+        
+    
+        attributes = []
+        for attr in attributes_clip:
+      
+            best_path = find_similar_paths(blend_embedding_fclip, attributes_fclip_text[attr], threshold)
+    
+            # attributes[attr] = ', '.join(best_path).strip()
+            attributes.append({'attr': attr, 'similarities': best_path})
 
     return categories, attributes
     
