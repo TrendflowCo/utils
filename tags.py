@@ -52,20 +52,20 @@ def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
 
     # Image embeddings
     image_embedding_clip = clip_image(img_url, cookies_dict)
-    if image_embedding_clip is not none:
+    if image_embedding_clip is not None:
         image_embedding_clip = image_embedding_clip.to(device)
         
     image_embedding_fclip = fclip_image(img_url, cookies_dict)
-    if image_embedding_fclip is not none:
+    if image_embedding_fclip is not None:
         image_embedding_fclip = image_embedding_fclip.to(device)
 
     # Text embeddings
     text_embedding_fclip = fclip_text(text).to(device)
-    if text_embedding_fclip is not none:
+    if text_embedding_fclip is not None:
         text_embedding_fclip = text_embedding_fclip.to(device)
         
     text_full_embedding_clip = clip_text(text_full).to(device)
-    if text_full_embedding_clip is not none:
+    if text_full_embedding_clip is not None:
         text_full_embedding_clip = text_full_embedding_clip.to(device)
 
     return (image_embedding_clip,
