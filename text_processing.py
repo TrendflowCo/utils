@@ -64,13 +64,6 @@ def create_full_text(row):
     
     full_text += f" Made by {row['brand']}."
     full_text += f" For {row['category']}."
-    
-    # currency_text = ' euros' if row['currency']=='EUR' else ' dollars' if row['currency']=='USD' else ''
-    # if pd.notnull(row['price']):
-    #     full_text += f" It's price is {str(int(row['price']))}"
-    #     full_text += currency_text+'.'
-    # # full_text += f" This item is{'' if row['sale'] else ' not'} on sale"
-    #     full_text += f" This item is on sale" if row['sale'] else ''
     full_text = full_text.strip()
     
     return full_text
