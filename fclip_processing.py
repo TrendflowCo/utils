@@ -11,6 +11,16 @@ processor = CLIPProcessor.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
         
 def compute_image_embeddings(url_image, cookies_dict=None):
+    """
+    Compute the image embeddings for a given image.
+    
+    Args:
+        url_image (str): The URL of the image
+        cookies_dict (dict): The cookies to use for the request
+    
+    Returns:
+        image_features (torch.Tensor): The image features of shape (1, 512)
+    """
     try:
         img = get_img(url_image, cookies_dict)
         datas = processor(images=[img], return_tensors='pt').to(device)
@@ -23,25 +33,17 @@ def compute_image_embeddings(url_image, cookies_dict=None):
     except Exception as e:
         print(e)
         return None
-    
-# def get_image_embeddings_with_dataset(url_image):
-
-#     try:
-#         img = get_img(url_image)
-#         img = pass_images_through_data([img])
-#         datas = processor(images=img, return_tensors='pt')
-        
-#         with torch.no_grad():
-#             embeddings = model.get_image_features(**datas)
-
-#         return embeddings.numpy()
-#     except Exception as e:
-#         print(e)
-#         return None
-
-
-        
+   
 def compute_text_embeddings(text):
+    """
+    Compute the text embeddings for a given text.
+    
+    Args:
+        text (str): The text to embed
+    
+    Returns:
+        text_features (torch.Tensor): The text features of shape (1, 512)
+    """
     if isinstance(text, str):
         text = [text]
     datas = processor(text, padding="max_length", return_tensors="pt", 

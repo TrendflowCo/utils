@@ -4,12 +4,26 @@ import string
 
 
 def prepare_datasets(df, necessary_cols):
+    """
+    Prepare the datasets for the similarity search.
+    
+    Args:
+        df (pd.DataFrame): The dataframe to prepare
+        necessary_cols (list): The list of necessary columns
+    
+    Returns:
+        items (pd.DataFrame): The dataframe with the necessary columns
+        images (pd.DataFrame): The dataframe with the image URLs
+    """
 
+    # Remove rows with missing values in the necessary columns
     for col in ['img_url', 'shop_link']:
         df = df[~df[col].isna()]
 
+    # Keep only the necessary columns
     items = df[[col for col in necessary_cols if col!='img_url']]
     
+    # Remove duplicated rows based on the 'shop_link' column
     images = df[['shop_link', 'img_url']].drop_duplicates().reset_index(drop=True)
 
     # Count the number of non-null values in each row
@@ -19,7 +33,6 @@ def prepare_datasets(df, necessary_cols):
     items = items.sort_values('non_null_count', ascending=False)
 
     # Drop duplicated rows keeping the first occurrence based on priority columns
-    #priority_columns = ['shop_link', 'name', 'desc_1', 'price', 'category', 'old_price']
     items = items.drop_duplicates(subset='shop_link', keep='first')
 
     # Remove the 'non_null_count' column
@@ -29,7 +42,16 @@ def prepare_datasets(df, necessary_cols):
 
     
 def get_cookies(url):
+    """
+    Get the cookies from a website.
     
+    Args:
+        url (str): The URL of the website
+    
+    Returns:
+        cookies_dict (dict): The cookies of the website
+    """
+
     headers = {
             'User-Agent': generate_user_agent()
     }
@@ -47,6 +69,16 @@ def get_cookies(url):
 
 
 def generate_user_agent():
+    """
+    Generate a random user agent.
+    
+    Args:
+        None
+    
+    Returns:
+        user_agent (str): The user agent
+    
+    """
     # Generate a random browser name
     browser = ''.join(random.choices(string.ascii_uppercase, k=5))
     

@@ -7,6 +7,17 @@ sys.path.append('..')
 from .scraping import generate_user_agent
 
 def get_img(url_image, cookies_dict=None, timeout=60):
+    """
+    Get the image from the URL.
+    
+    Args:
+        url_image (str): The URL of the image
+        cookies_dict (dict): The cookies to use for the request
+        timeout (int): The timeout in seconds
+    
+    Returns:
+        img (PIL.Image.Image): The image
+    """
     if url_image is not None:
         try:
             # Randomly select a User-Agent for each request
@@ -40,10 +51,3 @@ def get_img(url_image, cookies_dict=None, timeout=60):
             # print(f"Error: {e}")
     
     return None  # Return None if there was an issue
-
-
-# def get_img(url_image):
-#     if url_image is not None:
-#         response = requests.get(url_image)
-#         img = Image.open(BytesIO(response.content)).convert("RGB")
-#         return img

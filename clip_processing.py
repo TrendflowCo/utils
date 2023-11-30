@@ -12,13 +12,17 @@ input_resolution = model.visual.input_resolution
 context_length = model.context_length
 vocab_size = model.vocab_size
 
-# print("Model parameters:", f"{np.sum([int(np.prod(p.shape)) for p in model.parameters()]):,}")
-# print("Input resolution:", input_resolution)
-# print("Context length:", context_length)
-# print("Vocab size:", vocab_size)
-
-
 def compute_image_embeddings(url_image, cookies_dict=None):
+    """
+    Compute the image embeddings for a given image.
+
+    Args:
+        url_image (str): The URL of the image
+        cookies_dict (dict): The cookies to use for the request
+
+    Returns:
+        image_features (torch.Tensor): The image features of shape (1, 512)
+    """
     try:
         img = get_img(url_image, cookies_dict)
         img = preprocess(img)
@@ -31,6 +35,15 @@ def compute_image_embeddings(url_image, cookies_dict=None):
         return None
 
 def compute_text_embeddings(text):
+    """
+    Compute the text embeddings for a given text.
+    
+    Args:
+        text (str): The text to embed
+    
+    Returns:
+        text_features (torch.Tensor): The text features of shape (1, 512)
+    """
     try:
         text = clip.tokenize(text, context_length=77, truncate=True).to(device)
 

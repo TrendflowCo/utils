@@ -15,34 +15,20 @@ from .taxonomies import (taxonomy_db_clip, attributes_fclip_text, attributes_cli
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# import pickle as pkl
 
-# # CLIP
-# with open('/vocab/taxonomy_embeddings_clip.pkl', 'rb') as f:
-#     taxonomy_clip = pkl.load(f)
-
-# with open('./vocab/attributes_embeddings_clip.pkl', 'rb') as f:
-#     attributes_clip = pkl.load(f)
-
-
-# # FCLIP
-# with open('./vocab/taxonomy_embeddings_fclip.pkl', 'rb') as f:
-#     taxonomy_fclip = pkl.load(f)
-
-# with open('./vocab/attributes_embeddings_fclip.pkl', 'rb') as f:
-#     attributes_fclip = pkl.load(f)
-
-
-# with open('./vocab/attributes_embeddings_clip_flat.pkl', 'rb') as f:
-#     attributes_clip_text = pkl.load(f)
-
-# with open('./vocab/attributes_embeddings_fclip_flat.pkl', 'rb') as f:
-#     attributes_fclip_text = pkl.load(f)
-    
-# with open('./vocab/db/taxonomy_embeddings_clip.pkl', 'rb') as f:
-#     taxonomy_db_clip = pkl.load(f)
-    
 def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
+    """
+    Compute the embeddings for a given item.
+    
+    Args:
+        item_data (dict): The item data
+        text_cols (list): The columns to use for the text embeddings
+        text_cols_full (list): The columns to use for the text embeddings
+        cookies_dict (dict): The cookies to use for the request
+    
+    Returns:
+        embeddings (tuple): The image and text embeddings
+    """
     
     img_url = item_data['Product image URL']
     shop_link = item_data['Product page URL']
@@ -74,14 +60,26 @@ def compute_item_embeddings(item_data, text_cols, text_cols_full, cookies_dict):
             text_full_embedding_clip)
 
 def predict_tags(embeddings, threshold=0.25):
+    """
+    Predict the tags for a given item.
+    
+    Args:
+        embeddings (tuple): The image and text embeddings
+        threshold (float): The threshold for the similarity score
+    
+    Returns:
+        categories (list): The categories
+        attributes (list): The attributes
+    """
 
+    # Get the embeddings
     (image_embedding_clip,
     image_embedding_fclip,
     text_embedding_fclip,
     text_full_embedding_clip) = embeddings
 
     categories, attributes = None, None
-
+    
     if not (image_embedding_clip is None or text_full_embedding_clip is None):
         
         blend_full_embedding_clip = torch.concat([image_embedding_clip, text_full_embedding_clip]).mean(0).reshape(1, -1)
@@ -105,7 +103,17 @@ def predict_tags(embeddings, threshold=0.25):
     
     
 def get_image_top_tags(img_url, THRESHOLD=0.25):
+    """
+    Get the top tags for a given image.
     
+    Args:
+        img_url (str): The URL of the image
+        THRESHOLD (float): The threshold for the similarity score
+    
+    Returns:
+        tags_by_category (dict): The tags by category
+    """
+
     col_name = f'similarity_{col_idx}'
     top_tags_df[col_name] = pd.Series(tags_similarities_dict[img_url])
     top_tags_df = top_tags_df[top_tags_df[col_name]>0.2]
@@ -124,36 +132,19 @@ def get_image_top_tags(img_url, THRESHOLD=0.25):
     return tags_by_category
 
 
-# def get_image_top_tags(img_url, tags_embeddings):
-
-#     top_tags = {}
-
-#     results = get_image_tags_similarity(img_url, tags_embeddings)
-
-#     for category in results:
-#         for tag in results[category]:
-#             d = results[category][tag]
-#             d['category'] = category
-#             top_tags[tag] = d
-
-#     similarities = get_similarity(e_img_cat.cuda(), e_tags.cuda())
-
-#     top_tags_df = tags_df.copy()
-#     top_tags_df['similarity'] = pd.Series(similarities[:, 0].cpu())
-#     p = top_tags_df.groupby('category')['similarity'].rank(pct=True)
-#     p.name = 'percentil'
-#     top_tags_df = top_tags_df.join(p)
-#     # top_tags_df = top_tags_df.reset_index().rename(columns={'index': 'tag'})
-#     top_tags_df['score'] = top_tags_df['similarity']*top_tags_df['percentil']
-#     top_tags_df[top_tags_df['score']>0.2].sort_values(by='score', ascending=False)
-
-#     top_tags_dict = top_tags_df[top_tags_df['score']>0.2].sort_values(by='score', ascending=False).groupby('category')['value'].agg(set).to_dict()
-#     return top_tags_dict
-
 def get_image_tags_similarity(img_url, tags_embeddings):
-
+    """
+    Get the similarity scores for the tags of a given image.
+    
+    Args:
+        img_url (str): The URL of the image
+        tags_embeddings (dict): The tags embeddings
+    
+    Returns:
+        results (dict): The similarity scores for the tags
+    """
     results = {}
-
+    # Compute the similarity scores for each category
     for category in tags_embeddings:
         tag_similarities = []
         for tag in tags_embeddings[category]:
